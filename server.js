@@ -17,13 +17,23 @@ var io          = require('socket.io')(server, { origins: '*:*',
 
 var DEBUG = true;
 
+var boomcount = 0;
+
 io.on('connect', function(socket){
   console.log('io got connect, socket is: ', socket.id, socket.adapter.rooms);
-  socket.on('disconnect', function(socket) {
-    console.log('socket disco', socket.id, socket.adapter.rooms)
+  socket.on('disconnect', function() {
+    console.log('socket disco', socket.id, socket.adapter, socket.adapter ? socket.adapter.rooms: null)
+  })
+  socket.on('roomy',function(){
+    socket.join('boomishly');
+    io.to('boomishly').emit('welcome to boomishly')
   })
 });
 
+setInterval(function(){
+  console.log('interval fired...', boomcount);
+  io.to('boomishly').emit('boomcount: '+boomcount++)
+},1000)
 
 
 app.get('/', function (req, res) {
